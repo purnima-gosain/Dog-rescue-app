@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "167421479625",
+    "project_id": "dogrescueapp-8308e",
+    "storage_bucket": "dogrescueapp-8308e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167421479625:android:2bbaecced1302ad48c9b18",
+        "android_client_info": {
+          "package_name": "com.example.dog_rescue_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "167421479625-b643egm0aho8ltaos5rer52171gfm8pi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.dog_rescue_app",
+            "certificate_hash": "16612d8e1095a51e0167567f4ea4817439561543"
+          }
+        },
+        {
+          "client_id": "167421479625-96r77tif9au6coj8eqh3tdckej91598t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa0GbvFRSI6xXuDJyzGDCU1jWZ2qBNe9s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "167421479625-96r77tif9au6coj8eqh3tdckej91598t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
