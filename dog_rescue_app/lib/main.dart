@@ -1,5 +1,7 @@
 //  import 'package:firebase_core/firebase_core.dart';
 import 'package:dog_rescue_app/home.dart';
+import 'package:dog_rescue_app/login_register.dart';
+import 'package:dog_rescue_app/option_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -31,10 +33,7 @@ class _MyAppState extends State<MyApp> {
       () => Navigator.push(
         context,
         MaterialPageRoute(builder: (context) {
-          //var key;
-          return HomeScreen(
-              //key: key,
-              );
+          return LoginRegister();
         }),
       ),
     );
@@ -48,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         Container(
           width: 400,
           height: 800,
-          color: Colors.orange.shade700,
+          color: Colors.grey[200],
           child: ClipOval(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
