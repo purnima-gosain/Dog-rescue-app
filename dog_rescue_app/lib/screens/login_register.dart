@@ -73,12 +73,21 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       ),
     );
+
     //password field
     final passwordField = TextFormField(
       autofocus: false,
       controller: passwordController,
       obscureText: true,
-      // validator: ,
+      validator: (value) {
+        RegExp regex = new RegExp(r'^.{6,}$');
+        if (value!.isEmpty) {
+          return "Please Enter your password";
+        }
+        if (!regex.hasMatch(value)) {
+          return "Please enter valid password of minimum 6 characters";
+        }
+      },
       onSaved: (value) {
         passwordController.text = value!;
       },
