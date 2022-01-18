@@ -1,7 +1,7 @@
 //  import 'package:firebase_core/firebase_core.dart';
-import 'package:dog_rescue_app/home.dart';
-import 'package:dog_rescue_app/login_register.dart';
-import 'package:dog_rescue_app/option_screen.dart';
+import 'package:dog_rescue_app/screens/home.dart';
+import 'package:dog_rescue_app/screens/login_register.dart';
+//import 'package:dog_rescue_app/screens/option_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,7 +33,9 @@ class _MyAppState extends State<MyApp> {
       () => Navigator.push(
         context,
         MaterialPageRoute(builder: (context) {
-          return LoginRegister();
+          return LoginScreen(
+            key: null,
+          );
         }),
       ),
     );
