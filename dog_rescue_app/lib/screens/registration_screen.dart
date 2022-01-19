@@ -24,7 +24,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       autofocus: false,
       controller: firstNameEditingController,
       keyboardType: TextInputType.name,
-      // validator: ,
+      validator: (value) {
+        RegExp regex = new RegExp(r'^.{3,}$');
+        if (value!.isEmpty) {
+          return "First name cannot be empty";
+        }
+        if (!regex.hasMatch(value)) {
+          return "Please enter valid name of minimum 3 characters";
+        }
+        return null;
+      },
       onSaved: (value) {
         firstNameEditingController.text = value!;
       },
@@ -44,7 +53,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       autofocus: false,
       controller: secondNameEditingController,
       keyboardType: TextInputType.name,
-      // validator: ,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Second name cannot be empty";
+        }
+      },
       onSaved: (value) {
         secondNameEditingController.text = value!;
       },
@@ -64,7 +77,16 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       autofocus: false,
       controller: emailEditingController,
       keyboardType: TextInputType.emailAddress,
-      // validator: ,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Please Enter your Email.";
+        }
+        //reg expression for email validation
+        if (!RegExp("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]").hasMatch(value)) {
+          return "Please enter a valid email.";
+        }
+        return null;
+      },
       onSaved: (value) {
         emailEditingController.text = value!;
       },
@@ -84,7 +106,15 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       autofocus: false,
       controller: passwordEditingController,
       obscureText: true,
-      // validator: ,
+      validator: (value) {
+        RegExp regex = new RegExp(r'^.{6,}$');
+        if (value!.isEmpty) {
+          return "Please Enter your password";
+        }
+        if (!regex.hasMatch(value)) {
+          return "Please enter valid password of minimum 6 characters";
+        }
+      },
       onSaved: (value) {
         passwordEditingController.text = value!;
       },
@@ -104,7 +134,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       autofocus: false,
       controller: confirmPasswordEditingController,
       obscureText: true,
-      // validator: ,
+      validator: (value) {
+        if (confirmPasswordEditingController.text.length > 6 &&
+            passwordEditingController.text != value) {
+          return "Password Don't match";
+        }
+        return null;
+      },
       onSaved: (value) {
         confirmPasswordEditingController.text = value!;
       },
@@ -207,5 +243,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ],
       ),
     );
+  }
+
+  void signUp(String email, String password) async {
+    if (_formkey.currentState!.validate()) {}
   }
 }
