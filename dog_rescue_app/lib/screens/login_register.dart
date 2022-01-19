@@ -2,11 +2,12 @@ import 'package:dog_rescue_app/screens/home.dart';
 //import 'package:dog_rescue_app/screens/option_screen.dart';
 import 'package:dog_rescue_app/provider/google_sign_in.dart';
 import 'package:dog_rescue_app/screens/registration_screen.dart';
-import 'package:dog_rescue_app/screens/signup.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //firebase
 
-  final _auth = FirebaseAuth.instanceFor;
+  final _auth = FirebaseAuth.instance;
 
   // var nameController;
 
@@ -109,7 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
       child: MaterialButton(
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
           minWidth: MediaQuery.of(context).size.width,
-          onPressed: () {},
+          onPressed: () {
+            signIn(emailController.text, passwordController.text);
+          },
           child: Text(
             "Login",
             textAlign: TextAlign.center,
@@ -226,5 +229,21 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     );
+  }
+
+  //login function
+  void signIn(String email, String password) async {
+    if (_formkey.currentState!.validate()) {
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then((uid) => {
+                Fluttertoast.showToast(msg: "Login Successful"),
+                Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => HomeScreen())),
+              })
+          .catchError((e) {
+        Fluttertoast.showToast(msg: e!.message);
+      });
+    }
   }
 }
