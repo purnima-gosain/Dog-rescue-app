@@ -79,3 +79,48 @@
 //     );
 //   }
 // }
+
+  //  Container(
+  //                 height: 90,
+  //                 width: 300,
+  //                 padding: EdgeInsets.all(10),
+  //                 child: Builder(
+  //                   builder: (BuildContext newContext) {
+  //                     return ElevatedButton(
+  //                       child: Container(
+  //                         margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+  //                         child: Row(
+  //                           children: [
+  //                             Image.asset(
+  //                               "assets/images/google_logo.png",
+  //                               height: 28,
+  //                               width: 40,
+  //                               alignment: Alignment(0.09, 0.5),
+  //                             ),
+  //                             Text('Sign in with Google',
+  //                                 style: GoogleFonts.montserrat(
+  //                                   fontStyle: FontStyle.normal,
+  //                                   fontSize: 20,
+  //                                   color: Colors.black,
+  //                                 )),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                       style: ElevatedButton.styleFrom(
+  //                         primary: Colors.white,
+  //                         //backgroundColor: Colors.white,
+  //                         onSurface: Colors.white,
+  //                         shape: (RoundedRectangleBorder(
+  //                             borderRadius: BorderRadius.circular(10.0),
+  //                             side: BorderSide(color: Colors.white))),
+  //                       ),
+  //                       onPressed: () {
+  //                         final provider = Provider.of<GoogleSignInProvider>(
+  //                             context,
+  //                             listen: false);
+  //                         provider.googleLogin();
+  //                       },
+  //                     );
+  //                   },
+  //                 ),
+  //               ),

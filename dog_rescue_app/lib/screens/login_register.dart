@@ -1,6 +1,7 @@
 import 'package:dog_rescue_app/screens/home.dart';
+import 'package:dog_rescue_app/screens/profileScreen.dart';
 //import 'package:dog_rescue_app/screens/option_screen.dart';
-import 'package:dog_rescue_app/provider/google_sign_in.dart';
+//import 'package:dog_rescue_app/provider/google_sign_in.dart';
 import 'package:dog_rescue_app/screens/registration_screen.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,19 +11,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-
-// Future<void> main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-//   runApp(new MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     title: 'splash',
-//     theme: ThemeData(
-//       textTheme: GoogleFonts.montserratTextTheme(),
-//     ),
-//     home: new LoginScreen(),
-//   ));
-// }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({required Key? key}) : super(key: key);
@@ -196,12 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               borderRadius: BorderRadius.circular(10.0),
                               side: BorderSide(color: Colors.white))),
                         ),
-                        onPressed: () {
-                          final provider = Provider.of<GoogleSignInProvider>(
-                              context,
-                              listen: false);
-                          provider.googleLogin();
-                        },
+                        onPressed: () {},
                       );
                     },
                   ),

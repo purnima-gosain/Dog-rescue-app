@@ -1,11 +1,16 @@
 //  import 'package:firebase_core/firebase_core.dart';
 
-import 'package:dog_rescue_app/screens/login_register.dart';
+import 'dart:async';
+
+//import 'package:dog_rescue_app/controllers/login_controller.dart';
+// import 'package:dog_rescue_app/screens/login_register.dart';
+import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 //import 'package:dog_rescue_app/screens/option_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+//import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +21,7 @@ Future<void> main() async {
     theme: ThemeData(
       textTheme: GoogleFonts.montserratTextTheme(),
     ),
-    home: new MyApp(),
+    home: SplashScreen(),
   ));
 }
 
@@ -29,40 +34,9 @@ class _MyAppState extends State<MyApp> {
   // get key => null;
 
   @override
-  void initState() {
-    new Future.delayed(
-      const Duration(seconds: 3),
-      () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) {
-          return LoginScreen(
-            key: null,
-          );
-        }),
-      ),
-    );
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: ListView(children: [
-        Container(
-          width: 400,
-          height: 800,
-          color: Colors.grey[200],
-          child: ClipOval(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ClipOval(
-                child: Image.asset('assets/images/logo.jpg'),
-              ),
-            ],
-          )),
-        )
-      ]),
+    return Container(
+      child: SplashScreen(),
     );
   }
 }

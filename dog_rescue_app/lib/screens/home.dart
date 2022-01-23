@@ -1,9 +1,13 @@
 import 'dart:ui';
 
+//import 'package:dog_rescue_app/controllers/login_controller.dart';
 import 'package:dog_rescue_app/screens/add_post.dart';
+import 'package:dog_rescue_app/screens/profileScreen.dart';
+import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -258,6 +262,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        onTap: (value) {
+          if (value == 0)
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => NearMeScreen()));
+          // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          if (value == 3)
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => SplashScreen()));
+        },
         items: [
           BottomNavigationBarItem(
               icon: Icon(
