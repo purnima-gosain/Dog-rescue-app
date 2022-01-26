@@ -1,16 +1,8 @@
-//  import 'package:firebase_core/firebase_core.dart';
-
 import 'dart:async';
-
-//import 'package:dog_rescue_app/controllers/login_controller.dart';
-// import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
-//import 'package:dog_rescue_app/screens/option_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

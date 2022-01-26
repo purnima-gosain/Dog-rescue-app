@@ -1,16 +1,11 @@
 import 'package:dog_rescue_app/screens/home.dart';
-import 'package:dog_rescue_app/screens/profileScreen.dart';
-//import 'package:dog_rescue_app/screens/option_screen.dart';
-//import 'package:dog_rescue_app/provider/google_sign_in.dart';
 import 'package:dog_rescue_app/screens/registration_screen.dart';
-
+import 'package:dog_rescue_app/screens/reset_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({required Key? key}) : super(key: key);
@@ -142,10 +137,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       )),
                 ),
                 Container(
-                  child: Text(
-                    'Forgot password?',
-                    style: TextStyle(color: Colors.teal),
-                  ),
+                  child: TextButton(
+                      child: Text(
+                        'Forgot password?',
+                        style: TextStyle(color: Colors.teal),
+                      ),
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ResetPassword()))),
                 ),
                 Container(
                   child: Text("or"),
