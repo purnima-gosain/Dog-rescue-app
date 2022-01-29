@@ -1,5 +1,7 @@
+import 'package:dog_rescue_app/controllers/google_login_controller.dart';
 import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
@@ -9,6 +11,8 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  get key => null;
+
   @override
   void initState() {
     new Future.delayed(
@@ -27,6 +31,13 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // return MultiProvider(
+    //     providers: [
+    //       ChangeNotifierProvider(
+    //         create: (context) => GoogleSignInController(),
+    //         child: LoginScreen(key: key),
+    //       )
+    //     ],
     return Scaffold(
       body: ListView(children: [
         Container(

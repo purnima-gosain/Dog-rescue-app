@@ -1,3 +1,4 @@
+import 'package:dog_rescue_app/controllers/google_login_controller.dart';
 import 'package:dog_rescue_app/screens/home.dart';
 import 'package:dog_rescue_app/screens/registration_screen.dart';
 import 'package:dog_rescue_app/screens/reset_password.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({required Key? key}) : super(key: key);
@@ -91,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
       borderRadius: BorderRadius.circular(10),
       color: Colors.teal,
       child: MaterialButton(
-          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
           minWidth: MediaQuery.of(context).size.width,
           onPressed: () {
             signIn(emailController.text, passwordController.text);
@@ -104,6 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
           )),
     );
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: ListView(
         children: [
           Container(
@@ -114,7 +117,11 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ClipOval(
-                  child: Image.asset('assets/images/logo.jpg'),
+                  child: Image.asset(
+                    'assets/images/logo.jpg',
+                    height: 200,
+                    width: 200,
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(36.0),
@@ -149,45 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Container(
                   child: Text("or"),
-                ),
-                Container(
-                  height: 90,
-                  width: 300,
-                  padding: EdgeInsets.all(10),
-                  child: Builder(
-                    builder: (BuildContext newContext) {
-                      return ElevatedButton(
-                        child: Container(
-                          margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                          child: Row(
-                            children: [
-                              Image.asset(
-                                "assets/images/google_logo.png",
-                                height: 28,
-                                width: 40,
-                                alignment: Alignment(0.09, 0.5),
-                              ),
-                              Text('Sign in with Google',
-                                  style: GoogleFonts.montserrat(
-                                    fontStyle: FontStyle.normal,
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  )),
-                            ],
-                          ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.white,
-                          //backgroundColor: Colors.white,
-                          onSurface: Colors.white,
-                          shape: (RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              side: BorderSide(color: Colors.white))),
-                        ),
-                        onPressed: () {},
-                      );
-                    },
-                  ),
                 ),
                 Container(
                   margin: EdgeInsets.fromLTRB(0, 20, 0, 0),
@@ -228,5 +196,83 @@ class _LoginScreenState extends State<LoginScreen> {
         Fluttertoast.showToast(msg: e!.message);
       });
     }
+  }
+
+  loginUI() {
+    return Consumer<GoogleSignInController>(builder: (context, model, child) {
+      if (model.googleAccount != null) {
+        return loggedInUI(model);
+      } else {
+        return loginControls(context);
+      }
+    });
+  }
+
+  loggedInUI(GoogleSignInController model) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CircleAvatar(
+          backgroundImage:
+              Image.network(model.googleAccount!.photoUrl ?? '').image,
+          radius: 50,
+        ),
+        Text(model.googleAccount!.displayName ?? ''),
+        Text(model.googleAccount!.email),
+        ActionChip(
+            avatar: Icon(Icons.logout),
+            label: Text("Logout"),
+            onPressed: () {
+              Provider.of<GoogleSignInController>(context, listen: false)
+                  .logOut();
+            })
+      ],
+    );
+  }
+
+  loginControls(BuildContext context) {
+    Container(
+      height: 90,
+      width: 300,
+      padding: EdgeInsets.all(10),
+      child: Builder(
+        builder: (BuildContext newContext) {
+          return ElevatedButton(
+            child: Container(
+              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+              child: Row(
+                children: [
+                  Image.asset(
+                    "assets/images/google_logo.png",
+                    height: 28,
+                    width: 40,
+                    alignment: Alignment(0.09, 0.5),
+                  ),
+                  Text('Sign in with Google',
+                      style: GoogleFonts.montserrat(
+                        fontStyle: FontStyle.normal,
+                        fontSize: 20,
+                        color: Colors.black,
+                      )),
+                ],
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              primary: Colors.white,
+              //backgroundColor: Colors.white,
+              onSurface: Colors.white,
+              shape: (RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  side: BorderSide(color: Colors.white))),
+            ),
+            onPressed: () {
+              Provider.of<GoogleSignInController>(context, listen: false)
+                  .login();
+            },
+          );
+        },
+      ),
+    );
   }
 }
