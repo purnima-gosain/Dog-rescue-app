@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
           )),
     );
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      // resizeToAvoidBottomInset: false,
       body: ListView(
         children: [
           Container(
@@ -154,6 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(
                               builder: (context) => ResetPassword()))),
                 ),
+                loginControls(context),
                 Container(
                   child: Text("or"),
                 ),
@@ -232,47 +233,59 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   loginControls(BuildContext context) {
-    Container(
-      height: 90,
-      width: 300,
-      padding: EdgeInsets.all(10),
-      child: Builder(
-        builder: (BuildContext newContext) {
-          return ElevatedButton(
-            child: Container(
-              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-              child: Row(
-                children: [
-                  Image.asset(
-                    "assets/images/google_logo.png",
-                    height: 28,
-                    width: 40,
-                    alignment: Alignment(0.09, 0.5),
-                  ),
-                  Text('Sign in with Google',
-                      style: GoogleFonts.montserrat(
-                        fontStyle: FontStyle.normal,
-                        fontSize: 20,
-                        color: Colors.black,
-                      )),
-                ],
-              ),
-            ),
-            style: ElevatedButton.styleFrom(
-              primary: Colors.white,
-              //backgroundColor: Colors.white,
-              onSurface: Colors.white,
-              shape: (RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  side: BorderSide(color: Colors.white))),
-            ),
-            onPressed: () {
-              Provider.of<GoogleSignInController>(context, listen: false)
-                  .login();
-            },
-          );
-        },
-      ),
+    return GestureDetector(
+      child: Image.asset("assets/images/google.png", width: 250),
+      onTap: () {
+        Provider.of<GoogleSignInController>(context, listen: false)
+            .login()
+            .whenComplete(() {
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => HomeScreen()));
+        });
+      },
     );
   }
 }
+
+// Container(
+//       height: 90,
+//       width: 300,
+//       padding: EdgeInsets.all(10),
+//       child: Builder(
+//         builder: (BuildContext newContext) {
+//           return ElevatedButton(
+//             child: Container(
+//               margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+//               child: Row(
+//                 children: [
+//                   Image.asset(
+//                     "assets/images/google_logo.png",
+//                     height: 28,
+//                     width: 40,
+//                     alignment: Alignment(0.09, 0.5),
+//                   ),
+//                   Text('Sign in with Google',
+//                       style: GoogleFonts.montserrat(
+//                         fontStyle: FontStyle.normal,
+//                         fontSize: 20,
+//                         color: Colors.black,
+//                       )),
+//                 ],
+//               ),
+//             ),
+//             style: ElevatedButton.styleFrom(
+//               primary: Colors.white,
+//               //backgroundColor: Colors.white,
+//               onSurface: Colors.white,
+//               shape: (RoundedRectangleBorder(
+//                   borderRadius: BorderRadius.circular(10.0),
+//                   side: BorderSide(color: Colors.white))),
+//             ),
+//             onPressed: () {
+//               Provider.of<GoogleSignInController>(context, listen: false)
+//                   .login();
+//             },
+//           );
+//         },
+//       ),
+//     );
