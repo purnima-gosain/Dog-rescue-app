@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:dog_rescue_app/screens/add_post.dart';
 import 'package:dog_rescue_app/screens/profileScreen.dart';
 import 'package:dog_rescue_app/screens/splash.dart';
+import 'package:dog_rescue_app/screens/upload/upload.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -298,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => UploadPost()));
+              .push(MaterialPageRoute(builder: (context) => UploadScreen()));
         },
         backgroundColor: Colors.teal,
         child: const Icon(Icons.add),
