@@ -2,6 +2,7 @@ import 'dart:ui';
 
 //import 'package:dog_rescue_app/controllers/login_controller.dart';
 import 'package:dog_rescue_app/screens/add_post.dart';
+import 'package:dog_rescue_app/screens/helpline.dart';
 import 'package:dog_rescue_app/screens/profileScreen.dart';
 import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:dog_rescue_app/screens/upload/upload.dart';
@@ -267,11 +268,13 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 0)
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-          // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => NearMeScreen()));
+          if (value == 2)
+            Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => HelplineScreen()));
           // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
           if (value == 3)
             Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => SplashScreen()));
+                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
         },
         items: [
           BottomNavigationBarItem(
@@ -296,6 +299,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
         selectedItemColor: Colors.orange,
       ),
+
+      //for floating action button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)

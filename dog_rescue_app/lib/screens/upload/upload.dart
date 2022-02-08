@@ -91,9 +91,12 @@ class _UploadScreenState extends State<UploadScreen> {
                         shrinkWrap: true,
                         itemCount: snapshot.data!.items.length,
                         itemBuilder: (BuildContext context, int index) {
-                          return ElevatedButton(
-                            onPressed: () {},
-                            child: Text(snapshot.data!.items[index].name),
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ElevatedButton(
+                              onPressed: () {},
+                              child: Text(snapshot.data!.items[index].name),
+                            ),
                           );
                         }),
                   );
@@ -104,6 +107,26 @@ class _UploadScreenState extends State<UploadScreen> {
                 }
                 return Container();
               }),
+          FutureBuilder(
+              future: storage.downloadURL('dog6.jpg'),
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.hasData) {
+                  return Container(
+                    width: 300,
+                    height: 250,
+                    child: Image.network(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting ||
+                    !snapshot.hasData) {
+                  return CircularProgressIndicator();
+                }
+                return Container();
+              })
         ],
       ),
     );

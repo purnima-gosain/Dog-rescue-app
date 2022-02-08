@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.dog_rescue_app">
+    <queries>
+    <intent>
+    <action android:name="android.intent.action.DIAL" />
+    <data android:scheme="tel" />
+  </intent>
+    </queries>
    <application
         android:label="dog_rescue_app"
         android:icon="@mipmap/ic_launcher">
@@ -37,5 +43,6 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+            
     </application>
 </manifest>

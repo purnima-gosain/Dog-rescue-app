@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:dog_rescue_app/provider/google_sign_in.dart';
+import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(
             create: (context) => GoogleSignInProvider(),
-            child: SplashScreen(),
+            child: LoginScreen(key: key),
           )
         ],
         child: MaterialApp(

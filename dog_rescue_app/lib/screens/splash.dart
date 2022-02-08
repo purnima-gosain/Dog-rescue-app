@@ -1,7 +1,5 @@
-import 'package:dog_rescue_app/controllers/google_login_controller.dart';
 import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({Key? key}) : super(key: key);
