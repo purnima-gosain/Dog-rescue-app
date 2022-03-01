@@ -47,6 +47,9 @@ dependencies:
   dio: ^4.0.4
   flutter_polyline_points: ^1.0.0
   google_maps_flutter: ^2.1.1
+  flutter_svg: ^1.0.3
+  image_picker: ^0.8.4+9
+  camera: ^0.9.4+12
   
  
 

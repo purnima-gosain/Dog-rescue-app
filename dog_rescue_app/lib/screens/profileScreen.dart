@@ -42,24 +42,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Text(
-                "${loggedInUser.firstName} ${loggedInUser.secondName}",
-                style:
-                    TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 220, 0),
+                child: Text(
+                  "First name",
+                  style: TextStyle(color: Colors.grey),
+                ),
               ),
-              Text(
-                "${loggedInUser.email}",
-                style:
-                    TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+              Container(
+                height: 50,
+                width: 300,
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  " ${loggedInUser.firstName} ",
+                  style: TextStyle(
+                      color: Colors.teal, fontWeight: FontWeight.bold),
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(50)),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 220, 0),
+                child: Text(
+                  "Last name",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              Container(
+                height: 50,
+                width: 300,
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  "${loggedInUser.secondName}",
+                  style: TextStyle(
+                      color: Colors.teal, fontWeight: FontWeight.bold),
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(50)),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 250, 0),
+                child: Text(
+                  "Email",
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+              Container(
+                height: 50,
+                width: 300,
+                margin: EdgeInsets.all(10),
+                padding: EdgeInsets.all(15),
+                child: Text(
+                  " ${loggedInUser.email}",
+                  style: TextStyle(
+                      color: Colors.teal, fontWeight: FontWeight.bold),
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(50)),
               ),
               SizedBox(
                 height: 15,
               ),
-              ActionChip(
-                  label: Text("Logout"),
-                  onPressed: () {
-                    logout(context);
-                  })
+              SizedBox(
+                height: 50,
+                width: 300,
+                child: ElevatedButton(
+                  onPressed: (() => logout(context)),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(95, 0, 0, 0),
+                    child: Row(
+                      children: [Icon(Icons.logout), Text("Logout")],
+                    ),
+                  ),
+                ),
+              ),
+              // ActionChip(
+              //     backgroundColor: Colors.teal,
+              //     label: Text("Logout"),
+              //     onPressed: () {
+              //       logout(context);
+              //     })
             ],
           ),
         ),
