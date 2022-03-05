@@ -1,100 +1,103 @@
-// // ignore_for_file: unused_import, unused_local_variable, unused_element
-// import 'dart:io';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
-// import 'package:flutter/material.dart';
-// import 'package:flutter_svg/svg.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:camera/camera.dart';
+class ImagePick extends StatefulWidget {
+  ImagePick({Key? key}) : super(key: key);
 
-// class PickImage extends StatefulWidget {
-//   PickImage({Key? key}) : super(key: key);
+  @override
+  State<ImagePick> createState() => _ImagePickState();
+}
 
-//   @override
-//   State<PickImage> createState() => _PickImageState();
-// }
+class _ImagePickState extends State<ImagePick> {
+  File? image;
 
-// class _PickImageState extends State<PickImage> {
-//   XFile? file;
-//   takePhoto(context) async {
-//     Navigator.pop(context);
-//     XFile? file = await ImagePicker().pickImage(
-//       source: ImageSource.camera,
-//     );
-//     setState(() {
-//       this.file = file;
-//     });
-//   }
+  Future pickImage(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) return;
 
-//   Future fromGallery() async {
-//     Navigator.pop(context);
-//     XFile? file = await ImagePicker().pickImage(
-//       source: ImageSource.gallery,
-//     );
-//     setState(() {
-//       this.file = file;
-//     });
+      // ignore: unused_local_variable
+      final imageTemporary = File(image.path);
+      setState(() => this.image = imageTemporary);
+    }
 
-//     selectImage(parentContext) {
-//       return showDialog(
-//           context: parentContext,
-//           builder: (context) {
-//             return SimpleDialog(
-//               title: Text("Create Post"),
-//               children: [
-//                 SimpleDialogOption(
-//                   child: Text("Photo with Camera"),
-//                   //onPressed: () => takePhoto(context),
-//                 ),
-//                 SimpleDialogOption(
-//                   child: Text("Image from Gallery"),
-//                   onPressed: () => fromGallery(),
-//                 ),
-//                 SimpleDialogOption(
-//                   child: Text("Cancel"),
-//                   onPressed: () => Navigator.pop(context),
-//                 ),
-//               ],
-//             );
-//           });
-//     }
+    // ignore: unused_catch_clause
+    on PlatformException catch (e) {
+      print("Failed to pick image");
+    }
+  }
 
-//     Container buildSplashScreen() {
-//       return Container(
-//         color: Colors.white,
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.center,
-//           children: [
-//             Image.asset("assets/images/upload_icon.jpg"),
-//             Padding(
-//               padding: EdgeInsets.only(top: 20.0),
-//               child: ElevatedButton(
-//                 style: ButtonStyle(
-//                     backgroundColor:
-//                         MaterialStateProperty.all<Color>(Colors.orange),
-//                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-//                         RoundedRectangleBorder(
-//                             borderRadius: BorderRadius.circular(8.0)))),
-//                 onPressed: () => selectImage(context),
-//                 child: Text(
-//                   'Upload Image',
-//                   style: TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 22.0,
-//                   ),
-//                 ),
-//               ),
-//             )
-//           ],
-//         ),
-//       );
-//     }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        children: [
+          Spacer(),
+          image != null
+              ? ClipOval(
+                  child: Image.file(image!,
+                      width: 160, height: 160, fit: BoxFit.cover))
+              : GestureDetector(
+                  child: Image.asset(
+                    'assets/images/profile.png',
+                    height: 160,
+                    width: 160,
+                  ),
+                  onTap: () => showPopUpMenu(),
+                ),
+        ],
+      ),
+    );
+  }
 
-//     @override
-//     Widget build(BuildContext context) {
-//       return file == null ? buildSplashScreen() : Text("File loaded");
-//     }
-//   }
+  // Widget buildButton({
+  //   required String title,
+  //   required IconData icon,
+  //   required VoidCallback onClicked,
+  // }) =>
+  //     ElevatedButton(
+  //         style: ElevatedButton.styleFrom(
+  //           minimumSize: Size.fromHeight(56),
+  //           primary: Colors.teal,
+  //           onPrimary: Colors.white,
+  //           textStyle: TextStyle(fontSize: 20),
+  //         ),
+  //         onPressed: onClicked,
+  //         child: Row(
+  //           children: [
+  //             Icon(icon, size: 28),
+  //             const SizedBox(width: 16),
+  //             Text(title)
+  //           ],
+  //         ));
 
-//   @override
-//   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-// }
+  // buildButton(
+  //                 title: "Pick Gallery",
+  //                 icon: Icons.image_outlined,
+  //                 onClicked: () => pickImage(ImageSource.gallery)),
+  //             buildButton(
+  //                 title: "Pick Camera",
+  //                 icon: Icons.camera_alt_outlined,
+  //                 onClicked: () => pickImage(ImageSource.camera)),
+
+  showPopUpMenu() {
+    showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(45, 500, 50, 200),
+        items: [
+          PopupMenuItem(
+            child: Text("Pick from gallery"),
+            onTap: () => pickImage(ImageSource.gallery),
+            value: 1,
+          ),
+          PopupMenuItem(
+            child: Text("Pick from Camera"),
+            onTap: () => pickImage(ImageSource.camera),
+            value: 1,
+          ),
+        ]);
+  }
+}

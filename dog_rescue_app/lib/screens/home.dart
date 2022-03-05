@@ -269,6 +269,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 0)
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+          if (value == 1)
+            Navigator.of(context)
+                .push(MaterialPageRoute(builder: (context) => ImagePick()));
           if (value == 2)
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => HelplineScreen()));
@@ -305,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+              .push(MaterialPageRoute(builder: (context) => UploadScreen()));
         },
         backgroundColor: Colors.teal,
         child: const Icon(Icons.add),

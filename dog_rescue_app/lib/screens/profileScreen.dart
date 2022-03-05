@@ -3,6 +3,9 @@ import 'package:dog_rescue_app/model/user_model.dart';
 import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -14,7 +17,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-
+  File? image;
   @override
   void initState() {
     super.initState();
@@ -26,6 +29,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       this.loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
+  }
+
+  Future pickImage(ImageSource source) async {
+    try {
+      final image = await ImagePicker().pickImage(source: source);
+      if (image == null) return;
+
+      // ignore: unused_local_variable
+      final imageTemporary = File(image.path);
+      setState(() => this.image = imageTemporary);
+    }
+
+    // ignore: unused_catch_clause
+    on PlatformException catch (e) {
+      print("Failed to pick image");
+    }
   }
 
   @override
@@ -42,6 +61,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
+              image != null
+                  ? GestureDetector(
+                      onTap: () => showPopUpMenu(),
+                      child: ClipOval(
+                          child: Image.file(image!,
+                              width: 160, height: 160, fit: BoxFit.cover)),
+                    )
+                  : GestureDetector(
+                      child: Image.asset(
+                        'assets/images/profile.png',
+                        height: 160,
+                        width: 160,
+                      ),
+                      onTap: () => showPopUpMenu(),
+                    ),
+
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 0, 220, 0),
                 child: Text(
@@ -142,5 +177,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     await FirebaseAuth.instance.signOut();
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => LoginScreen(key: null)));
+  }
+
+  showPopUpMenu() {
+    showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(100, 400, 100, 200),
+        items: [
+          PopupMenuItem(
+            child: Text("Pick from gallery"),
+            onTap: () => pickImage(ImageSource.gallery),
+            value: 1,
+          ),
+          PopupMenuItem(
+            child: Text("Pick from Camera"),
+            onTap: () => pickImage(ImageSource.camera),
+            value: 1,
+          ),
+        ]);
   }
 }
