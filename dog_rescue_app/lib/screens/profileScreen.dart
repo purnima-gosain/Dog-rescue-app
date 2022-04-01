@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dog_rescue_app/model/user_model.dart';
 import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:path/path.dart';
 
 class ProfileScreen extends StatefulWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -15,9 +18,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  firebase_storage.FirebaseStorage storage =
+      firebase_storage.FirebaseStorage.instance;
+
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
-  File? image;
+  File? _image;
   @override
   void initState() {
     super.initState();
@@ -38,12 +44,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       // ignore: unused_local_variable
       final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
+      setState(() => this._image = imageTemporary);
     }
 
     // ignore: unused_catch_clause
     on PlatformException catch (e) {
       print("Failed to pick image");
+    }
+  }
+
+  Future uploadFile() async {
+    if (_image == null) return;
+    final fileName = basename(_image!.path);
+    final destination = 'profile/$fileName';
+
+    try {
+      final ref = firebase_storage.FirebaseStorage.instance
+          .ref(destination)
+          .child('file/');
+      await ref.putFile(_image!);
+    } catch (e) {
+      print('error occured');
     }
   }
 
@@ -61,11 +82,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              image != null
+              _image != null
                   ? GestureDetector(
                       onTap: () => showPopUpMenu(),
                       child: ClipOval(
-                          child: Image.file(image!,
+                          child: Image.file(_image!,
                               width: 160, height: 160, fit: BoxFit.cover)),
                     )
                   : GestureDetector(
@@ -181,7 +202,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   showPopUpMenu() {
     showMenu(
-        context: context,
+        context: this.context,
         position: RelativeRect.fromLTRB(100, 400, 100, 200),
         items: [
           PopupMenuItem(

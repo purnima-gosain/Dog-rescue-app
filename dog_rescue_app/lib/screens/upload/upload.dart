@@ -1,8 +1,7 @@
 // ignore_for_file: unused_local_variable, avoid_web_libraries_in_flutter
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:dog_rescue_app/screens/upload/storage_service.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:dog_rescue_app/screens/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class UploadScreen extends StatefulWidget {
   UploadScreen({Key? key}) : super(key: key);
@@ -12,122 +11,70 @@ class UploadScreen extends StatefulWidget {
 }
 
 class _UploadScreenState extends State<UploadScreen> {
-  final descriptionEditingController = new TextEditingController();
-  final ageEditingController = new TextEditingController();
-  final genderEditingController = new TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  String? postImageUrl, postTitle, postDescription;
 
   @override
   Widget build(BuildContext context) {
     //for firebase storage
-    final Storage storage = Storage();
-
-    //description field
-    final descrptionField = TextFormField(
-      autofocus: false,
-      controller: descriptionEditingController,
-      keyboardType: TextInputType.multiline,
-      maxLines: null,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return "Please write the description";
-        }
-      },
-      onSaved: (value) {
-        descriptionEditingController.text = value!;
-      },
-    );
-//agefield
-    final ageField = TextFormField(
-      autofocus: false,
-      controller: ageEditingController,
-      keyboardType: TextInputType.number,
-      maxLength: 100,
-    );
-//gender field
-    // final genderField = RadioButtonInputElement();
 
     return Scaffold(
       appBar: AppBar(
+        title: Text("Upload post"),
         backgroundColor: Colors.teal,
-        title: Text("Upload Post"),
       ),
-      body: ListView(
-        children: [
-          Center(
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(primary: Colors.teal),
-                onPressed: () async {
-                  final results = await FilePicker.platform.pickFiles(
-                    allowMultiple: false,
-                    type: FileType.custom,
-                    allowedExtensions: ['png', 'jpg'],
-                  );
-                  if (results == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("No file selected"),
-                    ));
-                    return null;
-                  }
-                  final path = results.files.single.path;
-                  final filename = results.files.single.name;
-
-                  storage
-                      .uploadFile(path!, filename)
-                      .then((value) => print('Done!!'));
+      body: Form(
+        key: _formKey,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              TextFormField(
+                validator: (val) => val!.isEmpty ? "Enter image url" : null,
+                decoration: InputDecoration(hintText: "Post image url"),
+                onChanged: (val) {
+                  postImageUrl = val;
                 },
-                child: Text("Upload Image")),
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              TextFormField(
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(6),
+                ],
+                validator: (val) => val!.isEmpty ? "Enter Post title" : null,
+                decoration: InputDecoration(
+                    hintText: "Post title (Rescue, Lost or Found)"),
+                onChanged: (val) {
+                  postImageUrl = val;
+                },
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              TextFormField(
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(500),
+                ],
+                validator: (val) =>
+                    val!.isEmpty ? "Enter Post description" : null,
+                decoration: InputDecoration(hintText: "Description"),
+                onChanged: (val) {
+                  postImageUrl = val;
+                },
+              ),
+              SizedBox(
+                height: 6,
+              ),
+              Spacer(),
+              greenButton(context, "Upload post"),
+              SizedBox(
+                height: 50,
+              ),
+            ],
           ),
-          FutureBuilder(
-              future: storage.listFiles(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<firebase_storage.ListResult> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    height: 50,
-                    child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        shrinkWrap: true,
-                        itemCount: snapshot.data!.items.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed: () {},
-                              child: Text(snapshot.data!.items[index].name),
-                            ),
-                          );
-                        }),
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    !snapshot.hasData) {
-                  return CircularProgressIndicator();
-                }
-                return Container();
-              }),
-          FutureBuilder(
-              future: storage.downloadURL('dog6.jpg'),
-              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData) {
-                  return Container(
-                    width: 300,
-                    height: 250,
-                    child: Image.network(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
-                    ),
-                  );
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    !snapshot.hasData) {
-                  return CircularProgressIndicator();
-                }
-                return Container();
-              })
-        ],
+        ),
       ),
     );
   }

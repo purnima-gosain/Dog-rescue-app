@@ -63,6 +63,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         if (value!.isEmpty) {
           return "Second name cannot be empty";
         }
+        return null;
       },
       onSaved: (value) {
         secondNameEditingController.text = value!;

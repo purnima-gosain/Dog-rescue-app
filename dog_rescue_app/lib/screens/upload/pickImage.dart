@@ -1,103 +1,212 @@
+// ignore_for_file: unused_field, unused_local_variable, must_be_immutable
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dog_rescue_app/model/user_model.dart';
+import 'package:dog_rescue_app/screens/upload/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:image_picker/image_picker.dart';
 
+import '../home.dart';
+
 class ImagePick extends StatefulWidget {
-  ImagePick({Key? key}) : super(key: key);
+  String? userId;
+
+  ImagePick({Key? key, this.userId}) : super(key: key);
 
   @override
   State<ImagePick> createState() => _ImagePickState();
 }
 
 class _ImagePickState extends State<ImagePick> {
-  File? image;
+  // String? _userId;
+  // _ImagePickState({required String? userid}) : _userId = userid;
+  //initializing parameters
+  File? _image;
+  final _auth = FirebaseAuth.instance;
+  final _formkey = GlobalKey<FormState>();
+  final postTitleController = new TextEditingController();
+  final descriptionController = new TextEditingController();
+  final imagePicker = ImagePicker();
+  String? downloadURL, postTitle, description;
 
-  Future pickImage(ImageSource source) async {
-    try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
+  Future imagePickerMethod() async {
+    //picking the image
+    final pick = await imagePicker.pickImage(source: ImageSource.gallery);
 
-      // ignore: unused_local_variable
-      final imageTemporary = File(image.path);
-      setState(() => this.image = imageTemporary);
-    }
-
-    // ignore: unused_catch_clause
-    on PlatformException catch (e) {
-      print("Failed to pick image");
-    }
+    setState(() {
+      if (pick != null) {
+        _image = File(pick.path);
+      } else {
+        showSnackBar("No file selected", Duration(milliseconds: 600));
+      }
+    });
   }
 
-  @override
+  //snackbar for showing error
+  showSnackBar(String snackText, Duration d) {
+    final snackBar = SnackBar(
+      content: Text(snackText),
+      duration: d,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  //uploading image to firebase storage
+  Future uploadPost(File _image) async {
+    final postID = DateTime.now().millisecondsSinceEpoch.toString();
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child("${widget.userId}/images")
+        .child("post_$postID");
+    await ref.putFile(_image);
+    downloadURL = await ref.getDownloadURL();
+//cloud firestore
+    // await firebaseFirestore
+    //     .collection("post")
+    //     .doc(widget.userId)
+    //     .collection("image")
+    //     .add({
+    //   'downloadURL': downloadURL,
+    // }).whenComplete(() =>
+    //         showSnackBar("Image uploaded successfully", Duration(seconds: 5)));
+    // calling our firestore
+    // calling our user model
+    // sending these values
+    User? user = _auth.currentUser;
+
+    DatabaseModel databaseModel = DatabaseModel();
+    databaseModel.uid = widget.userId;
+    databaseModel.postTitle = postTitleController.text;
+    databaseModel.description = descriptionController.text;
+    databaseModel.imageUrl = downloadURL;
+
+    await firebaseFirestore.collection("post").doc().set(databaseModel.toMap());
+
+    Fluttertoast.showToast(msg: "Uploaded successfully )");
+
+    Navigator.pushAndRemoveUntil(
+        (context),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
+        (route) => false);
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: [
-          Spacer(),
-          image != null
-              ? ClipOval(
-                  child: Image.file(image!,
-                      width: 160, height: 160, fit: BoxFit.cover))
-              : GestureDetector(
-                  child: Image.asset(
-                    'assets/images/profile.png',
-                    height: 160,
-                    width: 160,
-                  ),
-                  onTap: () => showPopUpMenu(),
+      appBar: AppBar(
+        title: const Text('Post Upload'),
+        backgroundColor: Colors.teal,
+      ),
+      body: Center(
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          //for rounded rectangular clip
+          child: ClipRRect(
+            child: Column(
+              children: [
+                Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: postTitleController,
+                          autofocus: false,
+                          maxLength: 6,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: "Post title(Rescue, Lost or Found)"),
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please Enter Post Title";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            postTitle = value;
+                          },
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: descriptionController,
+                          decoration: InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: "Post Description"),
+                          keyboardType: TextInputType.multiline,
+                          maxLines: null,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please Enter Post Description";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            description = value;
+                          },
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                      ],
+                    )),
+                const SizedBox(
+                  height: 10,
                 ),
-        ],
+                Expanded(
+                    // flex: 4,
+                    child: Container(
+                  height: 300,
+                  width: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.teal),
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: _image == null
+                                ? const Center(
+                                    child: Text("No image selected"),
+                                  )
+                                : Image.file(_image!)),
+                        ElevatedButton(
+                            style:
+                                ElevatedButton.styleFrom(primary: Colors.teal),
+                            onPressed: () {
+                              imagePickerMethod();
+                            },
+                            child: Text(
+                              "Select Image",
+                            )),
+                      ],
+                    ),
+                  ),
+                )),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.teal),
+                    onPressed: () {
+                      if (_image != null) {
+                        uploadPost(_image!);
+                      } else {
+                        showSnackBar("Please select the image first",
+                            Duration(milliseconds: 700));
+                      }
+                    },
+                    child: Text("Post")),
+              ],
+            ),
+          ),
+        ),
       ),
     );
-  }
-
-  // Widget buildButton({
-  //   required String title,
-  //   required IconData icon,
-  //   required VoidCallback onClicked,
-  // }) =>
-  //     ElevatedButton(
-  //         style: ElevatedButton.styleFrom(
-  //           minimumSize: Size.fromHeight(56),
-  //           primary: Colors.teal,
-  //           onPrimary: Colors.white,
-  //           textStyle: TextStyle(fontSize: 20),
-  //         ),
-  //         onPressed: onClicked,
-  //         child: Row(
-  //           children: [
-  //             Icon(icon, size: 28),
-  //             const SizedBox(width: 16),
-  //             Text(title)
-  //           ],
-  //         ));
-
-  // buildButton(
-  //                 title: "Pick Gallery",
-  //                 icon: Icons.image_outlined,
-  //                 onClicked: () => pickImage(ImageSource.gallery)),
-  //             buildButton(
-  //                 title: "Pick Camera",
-  //                 icon: Icons.camera_alt_outlined,
-  //                 onClicked: () => pickImage(ImageSource.camera)),
-
-  showPopUpMenu() {
-    showMenu(
-        context: context,
-        position: RelativeRect.fromLTRB(45, 500, 50, 200),
-        items: [
-          PopupMenuItem(
-            child: Text("Pick from gallery"),
-            onTap: () => pickImage(ImageSource.gallery),
-            value: 1,
-          ),
-          PopupMenuItem(
-            child: Text("Pick from Camera"),
-            onTap: () => pickImage(ImageSource.camera),
-            value: 1,
-          ),
-        ]);
+    // ));
   }
 }
