@@ -1,16 +1,12 @@
 // ignore_for_file: unused_field, unused_local_variable, must_be_immutable
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dog_rescue_app/model/user_model.dart';
 import 'package:dog_rescue_app/screens/upload/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import 'package:image_picker/image_picker.dart';
-
 import '../home.dart';
 
 class ImagePick extends StatefulWidget {
@@ -31,8 +27,9 @@ class _ImagePickState extends State<ImagePick> {
   final _formkey = GlobalKey<FormState>();
   final postTitleController = new TextEditingController();
   final descriptionController = new TextEditingController();
+  final contactNumController = new TextEditingController();
   final imagePicker = ImagePicker();
-  String? downloadURL, postTitle, description;
+  String? downloadURL, postTitle, description, contactNum;
 
   Future imagePickerMethod() async {
     //picking the image
@@ -67,21 +64,12 @@ class _ImagePickState extends State<ImagePick> {
     await ref.putFile(_image);
     downloadURL = await ref.getDownloadURL();
 //cloud firestore
-    // await firebaseFirestore
-    //     .collection("post")
-    //     .doc(widget.userId)
-    //     .collection("image")
-    //     .add({
-    //   'downloadURL': downloadURL,
-    // }).whenComplete(() =>
-    //         showSnackBar("Image uploaded successfully", Duration(seconds: 5)));
-    // calling our firestore
-    // calling our user model
-    // sending these values
+
     User? user = _auth.currentUser;
 
     DatabaseModel databaseModel = DatabaseModel();
     databaseModel.uid = widget.userId;
+    // databaseModel.contactNum = contactNumController.text;
     databaseModel.postTitle = postTitleController.text;
     databaseModel.description = descriptionController.text;
     databaseModel.imageUrl = downloadURL;
@@ -121,7 +109,7 @@ class _ImagePickState extends State<ImagePick> {
                               border: OutlineInputBorder(),
                               hintText: "Post title(Rescue, Lost or Found)"),
                           validator: (value) {
-                            if (value!.isEmpty) {
+                            if (value == null || value.isEmpty) {
                               return "Please Enter Post Title";
                             }
                             return null;
@@ -141,7 +129,7 @@ class _ImagePickState extends State<ImagePick> {
                           keyboardType: TextInputType.multiline,
                           maxLines: null,
                           validator: (value) {
-                            if (value!.isEmpty) {
+                            if (value == null || value.isEmpty) {
                               return "Please Enter Post Description";
                             }
                             return null;
@@ -153,6 +141,28 @@ class _ImagePickState extends State<ImagePick> {
                         SizedBox(
                           height: 20,
                         ),
+                        // TextFormField(
+                        //   controller: contactNumController,
+                        //   decoration: InputDecoration(
+                        //       border: OutlineInputBorder(),
+                        //       hintText: "Contact number"),
+                        //   keyboardType: TextInputType.number,
+                        //   maxLength: 10,
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return "Please Enter contact number";
+                        //     }
+                        //     return value.length < 10
+                        //         ? 'Minimum length should be 10'
+                        //         : null;
+                        //   },
+                        //   onSaved: (value) {
+                        //     contactNum = value;
+                        //   },
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
                       ],
                     )),
                 const SizedBox(
@@ -193,10 +203,10 @@ class _ImagePickState extends State<ImagePick> {
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.teal),
                     onPressed: () {
-                      if (_image != null) {
+                      if (_formkey.currentState!.validate()) {
                         uploadPost(_image!);
                       } else {
-                        showSnackBar("Please select the image first",
+                        showSnackBar("Please fill the form first",
                             Duration(milliseconds: 700));
                       }
                     },

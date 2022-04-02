@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
 class DatabaseModel {
   String? postTitle;
   String? description;
   String? uid;
   String? imageUrl;
-  int? contactNum;
+  String? contactNum;
 
   DatabaseModel(
       {this.postTitle,
@@ -18,7 +22,8 @@ class DatabaseModel {
         postTitle: map['postTitle'],
         description: map['description'],
         uid: map['uid'],
-        imageUrl: map['imageUrl']);
+        imageUrl: map['imageUrl'],
+        contactNum: map['contactNum']);
   }
 
   //sending data to our server
@@ -27,7 +32,12 @@ class DatabaseModel {
       'postTitle': postTitle,
       'description': description,
       'uid': uid,
-      'imageUrl': imageUrl
+      'imageUrl': imageUrl,
+      'contactNum': contactNum
     };
   }
+}
+
+getPostData() async {
+  return await firebaseFirestore.collection("post").snapshots();
 }

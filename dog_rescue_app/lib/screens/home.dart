@@ -5,6 +5,7 @@ import 'package:dog_rescue_app/screens/helpline.dart';
 import 'package:dog_rescue_app/screens/map.dart';
 import 'package:dog_rescue_app/screens/profileScreen.dart';
 import 'package:dog_rescue_app/screens/tnc.dart';
+import 'package:dog_rescue_app/screens/upload/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:dog_rescue_app/screens/upload/pickImage.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
+  DatabaseModel data = DatabaseModel();
 
   void initState() {
     super.initState();
@@ -36,6 +38,64 @@ class _HomeScreenState extends State<HomeScreen> {
       this.loggedInUser = UserModel.fromMap(value.data());
       setState(() {});
     });
+  }
+
+  void inState() {
+    super.initState();
+    FirebaseFirestore.instance.collection("post").doc().get().then((value) {
+      this.data = DatabaseModel.fromMap(value.data());
+      setState(() {});
+    });
+  }
+
+  // late Stream postStream;
+  Widget postList() {
+    return Container(
+        child: StreamBuilder(
+            stream: FirebaseFirestore.instance.collection("post").snapshots(),
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              if (snapshot.hasData && snapshot.data != null) {
+                if (snapshot.data!.docs.isNotEmpty) {
+                  return ListView.separated(
+                    itemBuilder: (context, int index) {
+                      Map<String, dynamic> docData =
+                          snapshot.data!.docs[index].data();
+
+                      if (docData.isEmpty) {
+                        return Text("Document is empty");
+                      }
+
+                      String ptitle =
+                          snapshot.data!.docs.elementAt(index).get("postTitle");
+                      String pdescription = snapshot.data!.docs
+                          .elementAt(index)
+                          .get("description");
+                      String url =
+                          snapshot.data!.docs.elementAt(index).get("imageUrl");
+
+                      return Column(
+                        children: [
+                          ListTile(
+                            title: Text(ptitle),
+                            subtitle: Text(pdescription),
+                          ),
+                          Image.network(url, height: 300, fit: BoxFit.cover)
+                        ],
+                      );
+                    },
+                    separatorBuilder: (__, ___) {
+                      return Divider();
+                    },
+                    itemCount: snapshot.data!.docs.length,
+                  );
+                } else {
+                  return const Center(child: Text("No document available"));
+                }
+              } else {
+                return const Center(child: Text("Getting error"));
+              }
+            }));
   }
 
   @override
@@ -55,227 +115,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: ListView(
-        children: [
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            child: Column(
-              children: [
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 180, 0),
-                  child: Text(
-                    "Hey Hooman",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 180, 10),
-                  child: Text(
-                    "Let's be a friend.",
-                    style: GoogleFonts.montserrat(
-                      fontSize: 15,
-                      color: Colors.black,
-                      //fontWeight: FontWeight.bold
-                    ),
-                  ),
-                ),
-                Card(
-                  child: InkWell(
-                    splashColor: Colors.orange,
-                    onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => UploadPost()));
-                    },
-                    child: SizedBox(
-                      width: 350,
-                      height: 350,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Image(
-                              image: AssetImage('assets/images/dog4.jpg'),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 270, 0),
-                            child: Text(
-                              "Lucy",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(FontAwesomeIcons.venus),
-                              Text("Female  "),
-                              Icon(FontAwesomeIcons.calendarAlt),
-                              Text(" 2 months old"),
-                            ],
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 10, 80, 0),
-                            child: Text("I am searching for perfect owner."),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            child: Column(
-              children: [
-                Card(
-                  child: InkWell(
-                    splashColor: Colors.orange,
-                    onTap: () {},
-                    child: SizedBox(
-                      width: 350,
-                      height: 350,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Image(
-                              image: AssetImage('assets/images/dog5.jpg'),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 270, 0),
-                            child: Text(
-                              "Puntey",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(FontAwesomeIcons.mars),
-                              Text("Male  "),
-                              Icon(FontAwesomeIcons.calendarAlt),
-                              Text(" +7 years old"),
-                            ],
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(5, 5, 50, 0),
-                            child: Text(
-                                "I've been lost anyone who knows me please contact my owner."),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            child: Column(
-              children: [
-                Card(
-                  child: InkWell(
-                    splashColor: Colors.orange,
-                    onTap: () {},
-                    child: SizedBox(
-                      width: 350,
-                      height: 350,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Image(
-                              image: AssetImage('assets/images/dog6.jpg'),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 250, 0),
-                            child: Text(
-                              "unknown",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(FontAwesomeIcons.mars),
-                              Text("Male  "),
-                              Icon(FontAwesomeIcons.calendarAlt),
-                              Text(" 3 months old"),
-                            ],
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 180, 0),
-                            child: Text("Too lazy to find owner."),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            child: Column(
-              children: [
-                Card(
-                  child: InkWell(
-                    splashColor: Colors.orange,
-                    onTap: () {},
-                    child: SizedBox(
-                      width: 350,
-                      height: 350,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Image(
-                              image: AssetImage('assets/images/dog7.jpg'),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 0, 270, 0),
-                            child: Text(
-                              "Ben",
-                              style: GoogleFonts.montserrat(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              Icon(FontAwesomeIcons.mars),
-                              Text("Male  "),
-                              Icon(FontAwesomeIcons.calendarAlt),
-                              Text(" 8 years old"),
-                            ],
-                          ),
-                          Container(
-                            margin: EdgeInsets.fromLTRB(0, 10, 80, 0),
-                            child: Text("He has been lost since 1 week."),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            ),
-          )
-        ],
+      body: Container(
+        child: postList(),
       ),
+
       drawer: Drawer(
         child: ListView(
           children: [
@@ -339,6 +182,28 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         backgroundColor: Colors.teal,
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class PostTile extends StatelessWidget {
+  final String imgUrl, title, description;
+  PostTile(
+      {required this.imgUrl, required this.description, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Stack(
+        children: [
+          Image.network(imgUrl),
+          Container(
+            child: Column(
+              children: [Text(title), Text(description)],
+            ),
+          )
+        ],
       ),
     );
   }
