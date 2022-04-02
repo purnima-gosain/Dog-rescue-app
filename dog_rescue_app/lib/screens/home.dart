@@ -12,6 +12,7 @@ import 'package:dog_rescue_app/screens/upload/pickImage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key? key}) : super(key: key);
@@ -115,8 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: Container(
-        child: postList(),
+      body: GestureDetector(
+        onTap: () {},
+        child: Container(
+          child: postList(),
+        ),
       ),
 
       drawer: Drawer(
@@ -138,9 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 0)
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-          if (value == 1)
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => GoogleMap()));
+          if (value == 1) MapUtils.openMap(47.628293260721, -122.34263420105);
           if (value == 2)
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => HelplineScreen()));
@@ -194,17 +196,34 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Stack(
-        children: [
-          Image.network(imgUrl),
-          Container(
-            child: Column(
-              children: [Text(title), Text(description)],
-            ),
-          )
-        ],
+    return ListView(children: [
+      Container(
+        child: Stack(
+          children: [
+            Image.network(imgUrl),
+            Container(
+              child: Column(
+                children: [Text(title), Text(description)],
+              ),
+            )
+          ],
+        ),
       ),
-    );
+    ]);
+  }
+}
+
+class MapUtils {
+  MapUtils._();
+
+  static Future<void> openMap(double latitude, double longitude) async {
+    String googleMapUrl =
+        "https://www.google.com/maps/search/?api=1&query=$latitude,$longitude";
+
+    if (await canLaunch(googleMapUrl)) {
+      await launch(googleMapUrl);
+    } else {
+      throw 'Could not open the Map';
+    }
   }
 }

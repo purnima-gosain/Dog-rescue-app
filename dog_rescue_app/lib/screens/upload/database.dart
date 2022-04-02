@@ -7,14 +7,10 @@ class DatabaseModel {
   String? description;
   String? uid;
   String? imageUrl;
-  String? contactNum;
+  String? postId;
 
   DatabaseModel(
-      {this.postTitle,
-      this.description,
-      this.uid,
-      this.imageUrl,
-      this.contactNum});
+      {this.postTitle, this.description, this.uid, this.imageUrl, this.postId});
 
   //taking data from the server
   factory DatabaseModel.fromMap(map) {
@@ -23,7 +19,7 @@ class DatabaseModel {
         description: map['description'],
         uid: map['uid'],
         imageUrl: map['imageUrl'],
-        contactNum: map['contactNum']);
+        postId: map['postId']);
   }
 
   //sending data to our server
@@ -33,7 +29,7 @@ class DatabaseModel {
       'description': description,
       'uid': uid,
       'imageUrl': imageUrl,
-      'contactNum': contactNum
+      'postId': postId
     };
   }
 }

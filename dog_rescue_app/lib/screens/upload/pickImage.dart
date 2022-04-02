@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import '../home.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class ImagePick extends StatefulWidget {
   String? userId;
@@ -30,6 +31,7 @@ class _ImagePickState extends State<ImagePick> {
   final contactNumController = new TextEditingController();
   final imagePicker = ImagePicker();
   String? downloadURL, postTitle, description, contactNum;
+  late bool _isLoading;
 
   Future imagePickerMethod() async {
     //picking the image
@@ -68,6 +70,7 @@ class _ImagePickState extends State<ImagePick> {
     User? user = _auth.currentUser;
 
     DatabaseModel databaseModel = DatabaseModel();
+    // databaseModel.postId = user.postId;
     databaseModel.uid = widget.userId;
     // databaseModel.contactNum = contactNumController.text;
     databaseModel.postTitle = postTitleController.text;
@@ -141,28 +144,6 @@ class _ImagePickState extends State<ImagePick> {
                         SizedBox(
                           height: 20,
                         ),
-                        // TextFormField(
-                        //   controller: contactNumController,
-                        //   decoration: InputDecoration(
-                        //       border: OutlineInputBorder(),
-                        //       hintText: "Contact number"),
-                        //   keyboardType: TextInputType.number,
-                        //   maxLength: 10,
-                        //   validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return "Please Enter contact number";
-                        //     }
-                        //     return value.length < 10
-                        //         ? 'Minimum length should be 10'
-                        //         : null;
-                        //   },
-                        //   onSaved: (value) {
-                        //     contactNum = value;
-                        //   },
-                        // ),
-                        // SizedBox(
-                        //   height: 20,
-                        // ),
                       ],
                     )),
                 const SizedBox(
@@ -204,6 +185,14 @@ class _ImagePickState extends State<ImagePick> {
                     style: ElevatedButton.styleFrom(primary: Colors.teal),
                     onPressed: () {
                       if (_formkey.currentState!.validate()) {
+                        showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const Center(
+                                    child: SpinKitFadingGrid(
+                                  size: 100,
+                                  color: Colors.teal,
+                                )));
                         uploadPost(_image!);
                       } else {
                         showSnackBar("Please fill the form first",
