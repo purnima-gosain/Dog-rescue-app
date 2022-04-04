@@ -58,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
               if (snapshot.hasData && snapshot.data != null) {
                 if (snapshot.data!.docs.isNotEmpty) {
-                  return ListView.separated(
+                  return ListView.builder(
                     itemBuilder: (context, int index) {
                       Map<String, dynamic> docData =
                           snapshot.data!.docs[index].data();
@@ -75,18 +75,23 @@ class _HomeScreenState extends State<HomeScreen> {
                       String url =
                           snapshot.data!.docs.elementAt(index).get("imageUrl");
 
-                      return Column(
-                        children: [
-                          ListTile(
-                            title: Text(ptitle),
-                            subtitle: Text(pdescription),
+                      return Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                          Image.network(url, height: 300, fit: BoxFit.cover)
-                        ],
+                          child: Column(
+                            children: [
+                              ListTile(
+                                title: Text(ptitle),
+                                subtitle: Text(pdescription),
+                              ),
+                              Image.network(url, height: 250, fit: BoxFit.cover)
+                            ],
+                          ),
+                        ),
                       );
-                    },
-                    separatorBuilder: (__, ___) {
-                      return Divider();
                     },
                     itemCount: snapshot.data!.docs.length,
                   );
@@ -116,12 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: GestureDetector(
-        onTap: () {},
-        child: Container(
-          child: postList(),
-        ),
-      ),
+      body: postList(),
 
       drawer: Drawer(
         child: ListView(
@@ -148,8 +148,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 MaterialPageRoute(builder: (context) => HelplineScreen()));
           // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
           if (value == 3)
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (context) => ProfileScreen()));
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ProfileScreen(userId: loggedInUser.uid)));
         },
         items: [
           BottomNavigationBarItem(

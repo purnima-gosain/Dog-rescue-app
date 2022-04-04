@@ -1,17 +1,19 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dog_rescue_app/model/user_model.dart';
 import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
-import 'package:path/path.dart';
-
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+  String? userId;
+  ProfileScreen({Key? key, this.userId}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -39,12 +41,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future pickImage(ImageSource source) async {
     try {
-      final image = await ImagePicker().pickImage(source: source);
-      if (image == null) return;
+      final _image = await ImagePicker().pickImage(source: source);
+      if (_image == null) return;
 
       // ignore: unused_local_variable
-      final imageTemporary = File(image.path);
+      final imageTemporary = File(_image.path);
       setState(() => this._image = imageTemporary);
+      final postID = DateTime.now().millisecondsSinceEpoch.toString();
+      FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child("${widget.userId}/profile")
+          .child("post_$postID");
+      await ref.putFile(imageTemporary);
     }
 
     // ignore: unused_catch_clause
@@ -53,19 +62,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Future uploadFile() async {
-    if (_image == null) return;
-    final fileName = basename(_image!.path);
-    final destination = 'profile/$fileName';
-
-    try {
-      final ref = firebase_storage.FirebaseStorage.instance
-          .ref(destination)
-          .child('file/');
-      await ref.putFile(_image!);
-    } catch (e) {
-      print('error occured');
-    }
+  Future uploadFile(_image) async {
+    final postID = DateTime.now().millisecondsSinceEpoch.toString();
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child("${widget.userId}/profile")
+        .child("post_$postID");
+    await ref.putFile(_image);
   }
 
   @override

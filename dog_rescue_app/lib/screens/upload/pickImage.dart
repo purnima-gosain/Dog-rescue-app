@@ -32,6 +32,20 @@ class _ImagePickState extends State<ImagePick> {
   final imagePicker = ImagePicker();
   String? downloadURL, postTitle, description, contactNum;
   late bool _isLoading;
+  String dropdownvalue = 'Lost';
+  var items = [
+    'Lost',
+    'Found',
+    'Rescue',
+  ];
+  // List<DropdownMenuItem<String>> get dropdownItems {
+  //   List<DropdownMenuItem<String>> menuItems = [
+  //     DropdownMenuItem(child: Text("Lost"), value: "Lost"),
+  //     DropdownMenuItem(child: Text("Found"), value: "Found"),
+  //     DropdownMenuItem(child: Text("Rescue"), value: "Rescue")
+  //   ];
+  //   return menuItems;
+  // }
 
   Future imagePickerMethod() async {
     //picking the image
@@ -73,7 +87,7 @@ class _ImagePickState extends State<ImagePick> {
     // databaseModel.postId = user.postId;
     databaseModel.uid = widget.userId;
     // databaseModel.contactNum = contactNumController.text;
-    databaseModel.postTitle = postTitleController.text;
+    databaseModel.postTitle = dropdownvalue;
     databaseModel.description = descriptionController.text;
     databaseModel.imageUrl = downloadURL;
 
@@ -100,27 +114,40 @@ class _ImagePickState extends State<ImagePick> {
           child: ClipRRect(
             child: Column(
               children: [
+                DropdownButton(
+                    value: dropdownvalue,
+                    items: items.map((String items) {
+                      return DropdownMenuItem(
+                        child: Text(items),
+                        value: items,
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        dropdownvalue = newValue!;
+                      });
+                    }),
                 Form(
                     key: _formkey,
                     child: Column(
                       children: [
-                        TextFormField(
-                          controller: postTitleController,
-                          autofocus: false,
-                          maxLength: 6,
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: "Post title(Rescue, Lost or Found)"),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Please Enter Post Title";
-                            }
-                            return null;
-                          },
-                          onSaved: (value) {
-                            postTitle = value;
-                          },
-                        ),
+                        // TextFormField(
+                        //   controller: postTitleController,
+                        //   autofocus: false,
+                        //   maxLength: 6,
+                        //   decoration: InputDecoration(
+                        //       border: OutlineInputBorder(),
+                        //       hintText: "Post title(Rescue, Lost or Found)"),
+                        //   validator: (value) {
+                        //     if (value == null || value.isEmpty) {
+                        //       return "Please Enter Post Title";
+                        //     }
+                        //     return null;
+                        //   },
+                        //   onSaved: (value) {
+                        //     postTitle = value;
+                        //   },
+                        // ),
                         SizedBox(
                           height: 20,
                         ),
