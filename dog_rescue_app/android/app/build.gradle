@@ -94,6 +94,7 @@ flutter {
 }
 
 dependencies {
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
     

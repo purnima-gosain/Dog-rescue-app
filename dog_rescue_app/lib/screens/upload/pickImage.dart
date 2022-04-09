@@ -38,14 +38,6 @@ class _ImagePickState extends State<ImagePick> {
     'Found',
     'Rescue',
   ];
-  // List<DropdownMenuItem<String>> get dropdownItems {
-  //   List<DropdownMenuItem<String>> menuItems = [
-  //     DropdownMenuItem(child: Text("Lost"), value: "Lost"),
-  //     DropdownMenuItem(child: Text("Found"), value: "Found"),
-  //     DropdownMenuItem(child: Text("Rescue"), value: "Rescue")
-  //   ];
-  //   return menuItems;
-  // }
 
   Future imagePickerMethod() async {
     //picking the image
@@ -131,23 +123,6 @@ class _ImagePickState extends State<ImagePick> {
                     key: _formkey,
                     child: Column(
                       children: [
-                        // TextFormField(
-                        //   controller: postTitleController,
-                        //   autofocus: false,
-                        //   maxLength: 6,
-                        //   decoration: InputDecoration(
-                        //       border: OutlineInputBorder(),
-                        //       hintText: "Post title(Rescue, Lost or Found)"),
-                        //   validator: (value) {
-                        //     if (value == null || value.isEmpty) {
-                        //       return "Please Enter Post Title";
-                        //     }
-                        //     return null;
-                        //   },
-                        //   onSaved: (value) {
-                        //     postTitle = value;
-                        //   },
-                        // ),
                         SizedBox(
                           height: 20,
                         ),
@@ -217,7 +192,7 @@ class _ImagePickState extends State<ImagePick> {
                             barrierDismissible: false,
                             builder: (context) => const Center(
                                     child: SpinKitFadingGrid(
-                                  size: 100,
+                                  size: 50,
                                   color: Colors.teal,
                                 )));
                         uploadPost(_image!);

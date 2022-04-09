@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dog_rescue_app/model/user_model.dart';
-import 'package:dog_rescue_app/screens/add_post.dart';
+import 'package:dog_rescue_app/screens/diet.dart';
+
 import 'package:dog_rescue_app/screens/helpline.dart';
-import 'package:dog_rescue_app/screens/map.dart';
+
 import 'package:dog_rescue_app/screens/profileScreen.dart';
 import 'package:dog_rescue_app/screens/tnc.dart';
 import 'package:dog_rescue_app/screens/upload/database.dart';
+import 'package:dog_rescue_app/screens/vaccination.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:dog_rescue_app/screens/upload/pickImage.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -51,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // late Stream postStream;
   Widget postList() {
+    FirebaseFirestore.instance.collection("post").snapshots();
+
     return Container(
         child: StreamBuilder(
             stream: FirebaseFirestore.instance.collection("post").snapshots(),
@@ -59,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (snapshot.hasData && snapshot.data != null) {
                 if (snapshot.data!.docs.isNotEmpty) {
                   return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, int index) {
                       Map<String, dynamic> docData =
                           snapshot.data!.docs[index].data();
@@ -74,9 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           .get("description");
                       String url =
                           snapshot.data!.docs.elementAt(index).get("imageUrl");
-
+                      // final items = [ptitle, pdescription, url];
+                      // final item = items[index];
                       return Padding(
-                        padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
+                        padding: const EdgeInsets.fromLTRB(10, 8.0, 8.0, 10),
                         child: Card(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15.0),
@@ -93,7 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     },
-                    itemCount: snapshot.data!.docs.length,
                   );
                 } else {
                   return const Center(child: Text("No document available"));
@@ -121,7 +126,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-      body: postList(),
+      body: GestureDetector(
+        child: Container(child: postList()),
+        onTap: () {
+          PopupMenuButton(
+            itemBuilder: (context) =>
+                [PopupMenuItem(child: Text("Delete"), onTap: () {})],
+          );
+        },
+      ),
 
       drawer: Drawer(
         child: ListView(
@@ -132,8 +145,18 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.of(context)
                       .push(MaterialPageRoute(builder: (context) => Tnc()));
                 }),
-            ListTile(title: Text("Vaccination"), onTap: () {}),
-            ListTile(title: Text("Diet Plan"), onTap: () {}),
+            ListTile(
+                title: Text("Vaccination"),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: ((context) => VaccinationScreen())));
+                }),
+            ListTile(
+                title: Text("Diet Plan"),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (((context) => DietScreen()))));
+                }),
           ],
         ),
       ),

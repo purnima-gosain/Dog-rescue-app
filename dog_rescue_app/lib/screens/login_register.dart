@@ -1,10 +1,12 @@
-import 'package:dog_rescue_app/controllers/google_login_controller.dart';
+import 'package:dog_rescue_app/controllers/google_signin_controller.dart';
+import 'package:dog_rescue_app/controllers/login_controller.dart';
 import 'package:dog_rescue_app/screens/home.dart';
 import 'package:dog_rescue_app/screens/registration_screen.dart';
 import 'package:dog_rescue_app/screens/reset_password.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   //form key
   final _formkey = GlobalKey<FormState>();
+
   //editing controller
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -65,6 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
       autofocus: false,
       controller: passwordController,
       obscureText: true,
+      // ignore: body_might_complete_normally_nullable
       validator: (value) {
         RegExp regex = new RegExp(r'^.{6,}$');
         if (value!.isEmpty) {
@@ -96,6 +100,14 @@ class _LoginScreenState extends State<LoginScreen> {
           padding: EdgeInsets.fromLTRB(20, 15, 20, 0),
           minWidth: MediaQuery.of(context).size.width,
           onPressed: () {
+            showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => const Center(
+                        child: SpinKitFadingGrid(
+                      size: 50,
+                      color: Colors.teal,
+                    )));
             signIn(emailController.text, passwordController.text);
           },
           child: Text(
@@ -154,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(
                               builder: (context) => ResetPassword()))),
                 ),
-                loginControls(context),
+                // loginUI(),
                 Container(
                   child: Text("or"),
                 ),
@@ -183,6 +195,19 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  loginUI() {
+    return Consumer<LoginController>(builder: (context, model, child) {
+      //if already logged in
+      if (model.userDetails != null) {
+        return Center(
+          child: loggedInUI(model),
+        );
+      } else {
+        return loginControllers(context);
+      }
+    });
+  }
+
   //login function
   void signIn(String email, String password) async {
     if (_formkey.currentState!.validate()) {
@@ -199,51 +224,46 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  loginUI() {
-    return Consumer<GoogleSignInController>(builder: (context, model, child) {
-      if (model.googleAccount != null) {
-        return loggedInUI(model);
-      } else {
-        return loginControls(context);
-      }
-    });
-  }
-
-  loggedInUI(GoogleSignInController model) {
+  loggedInUI(LoginController model) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
           backgroundImage:
-              Image.network(model.googleAccount!.photoUrl ?? '').image,
+              Image.network(model.userDetails!.photoURL ?? '').image,
           radius: 50,
         ),
-        Text(model.googleAccount!.displayName ?? ''),
-        Text(model.googleAccount!.email),
+        Text(model.userDetails!.displayName ?? ""),
+        Text(model.userDetails!.email ?? ""),
         ActionChip(
             avatar: Icon(Icons.logout),
             label: Text("Logout"),
             onPressed: () {
-              Provider.of<GoogleSignInController>(context, listen: false)
-                  .logOut();
+              Provider.of<LoginController>(context, listen: false).logout();
             })
       ],
     );
   }
 
-  loginControls(BuildContext context) {
-    return GestureDetector(
-      child: Image.asset("assets/images/google.png", width: 250),
-      onTap: () {
-        Provider.of<GoogleSignInController>(context, listen: false)
-            .login()
-            .whenComplete(() {
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => HomeScreen()));
-        });
-      },
+  loginControllers(BuildContext context) {
+    return Column(
+      children: [
+        GestureDetector(
+          child: Image.asset("assets/images/google.png", width: 250),
+          onTap: () {
+            Provider.of<LoginController>(context, listen: false).googleLogin();
+            //     .whenComplete(() {
+            //   Navigator.of(context).pushReplacement(
+            //       MaterialPageRoute(builder: (context) => HomeScreen()));
+            // }
+            //);
+          },
+        ),
+      ],
     );
+
+    // ;
   }
 }
 

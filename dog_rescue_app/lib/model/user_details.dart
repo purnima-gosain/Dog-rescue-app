@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-
 class UserDetails {
   String? displayName;
   String? email;
@@ -19,7 +17,7 @@ class UserDetails {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['displayName'] = this.displayName;
     data['email'] = this.email;
-    data['photoURL'] = this.photoURL;
+    data['photoUrl'] = this.photoURL;
 
     return data;
   }

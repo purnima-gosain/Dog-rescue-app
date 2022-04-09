@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, must_be_immutable
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dog_rescue_app/model/user_model.dart';
@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -26,6 +26,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   UserModel loggedInUser = UserModel();
   File? _image;
+  String? downloadURL;
+  final imagePicker = ImagePicker();
   @override
   void initState() {
     super.initState();
@@ -39,30 +41,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future pickImage(ImageSource source) async {
-    try {
-      final _image = await ImagePicker().pickImage(source: source);
-      if (_image == null) return;
-
-      // ignore: unused_local_variable
-      final imageTemporary = File(_image.path);
-      setState(() => this._image = imageTemporary);
-      final postID = DateTime.now().millisecondsSinceEpoch.toString();
-      FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child("${widget.userId}/profile")
-          .child("post_$postID");
-      await ref.putFile(imageTemporary);
-    }
-
-    // ignore: unused_catch_clause
-    on PlatformException catch (e) {
-      print("Failed to pick image");
-    }
+  Future pickImage() async {
+    final pick = await imagePicker.pickImage(source: ImageSource.gallery);
+    // if (_image == null) return;
+    // final imageTemporary = File(_image.path);
+    setState(() {
+      if (pick != null) {
+        _image = File(pick.path);
+      } else {
+        showSnackBar("No file selected", Duration(milliseconds: 600));
+      }
+    });
   }
 
-  Future uploadFile(_image) async {
+  showSnackBar(String snackText, Duration d) {
+    final snackBar = SnackBar(
+      content: Text(snackText),
+      duration: d,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  Future uploadFile(File _image) async {
     final postID = DateTime.now().millisecondsSinceEpoch.toString();
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
     Reference ref = FirebaseStorage.instance
@@ -70,6 +70,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .child("${widget.userId}/profile")
         .child("post_$postID");
     await ref.putFile(_image);
+    downloadURL = await ref.getDownloadURL();
+// uploading url of image to firestore
+    await firebaseFirestore
+        .collection("users")
+        .doc(widget.userId)
+        .collection("profile")
+        .add({'downloadURL': downloadURL}).whenComplete(
+            () => showSnackBar("Uploaded successfully", Duration(seconds: 5)));
   }
 
   @override
@@ -172,6 +180,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 height: 50,
                 width: 300,
                 child: ElevatedButton(
+                  onPressed: (() {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) => const Center(
+                                child: SpinKitFadingGrid(
+                              size: 50,
+                              color: Colors.teal,
+                            )));
+                    uploadFile(_image!);
+                  }),
+                  style: ElevatedButton.styleFrom(
+                      primary: Colors.teal,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20))),
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(70, 0, 0, 0),
+                    child: Row(
+                      children: [Text("Upload profile picture")],
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 15,
+              ),
+              SizedBox(
+                height: 50,
+                width: 300,
+                child: ElevatedButton(
                   onPressed: (() => logout(context)),
                   style: ElevatedButton.styleFrom(
                       primary: Colors.teal,
@@ -210,13 +248,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         position: RelativeRect.fromLTRB(100, 400, 100, 200),
         items: [
           PopupMenuItem(
-            child: Text("Pick from gallery"),
-            onTap: () => pickImage(ImageSource.gallery),
-            value: 1,
-          ),
-          PopupMenuItem(
-            child: Text("Pick from Camera"),
-            onTap: () => pickImage(ImageSource.camera),
+            child: Text("Select image"),
+            onTap: () => pickImage(),
             value: 1,
           ),
         ]);

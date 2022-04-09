@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'package:dog_rescue_app/provider/google_sign_in.dart';
-import 'package:dog_rescue_app/screens/login_register.dart';
+import 'package:dog_rescue_app/controllers/login_controller.dart';
+// import 'package:dog_rescue_app/provider/google_sign_in.dart';
+// import 'package:dog_rescue_app/screens/login_register.dart';
 import 'package:dog_rescue_app/screens/splash.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -25,13 +26,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-        providers: [
-          ChangeNotifierProvider(
-            create: (context) => GoogleSignInProvider(),
-            child: LoginScreen(key: key),
-          )
-        ],
+    return ChangeNotifierProvider(
+        create: (context) => LoginController(),
+        // child: LoginScreen(key: key),
+
         child: MaterialApp(
           home: SplashScreen(),
         ));
