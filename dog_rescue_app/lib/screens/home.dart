@@ -1,9 +1,9 @@
+//importing all the packages
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dog_rescue_app/model/user_model.dart';
 import 'package:dog_rescue_app/screens/diet.dart';
-
 import 'package:dog_rescue_app/screens/helpline.dart';
-
 import 'package:dog_rescue_app/screens/profileScreen.dart';
 import 'package:dog_rescue_app/screens/tnc.dart';
 import 'package:dog_rescue_app/screens/upload/database.dart';
@@ -12,7 +12,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:dog_rescue_app/screens/upload/pickImage.dart';
 import 'package:flutter/material.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -51,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  // late Stream postStream;
+// making widget for listing all the documents or post user uploaded.
   Widget postList() {
     FirebaseFirestore.instance.collection("post").snapshots();
 
@@ -71,7 +70,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (docData.isEmpty) {
                         return Text("Document is empty");
                       }
-
+                      // final datas = snapshot.data!.docs;
+                      // for (var st in datas) {
+                      //   final docid = st.id;
+                      //   final ds = postDel(docid);
+                      // }
+                      String pid = snapshot.data!.docs.elementAt(index).id;
                       String ptitle =
                           snapshot.data!.docs.elementAt(index).get("postTitle");
                       String pdescription = snapshot.data!.docs
@@ -81,22 +85,28 @@ class _HomeScreenState extends State<HomeScreen> {
                           snapshot.data!.docs.elementAt(index).get("imageUrl");
                       // final items = [ptitle, pdescription, url];
                       // final item = items[index];
+                      // String docid = snapshot.data!.docs.id;
                       return Padding(
                         padding: const EdgeInsets.fromLTRB(10, 8.0, 8.0, 10),
-                        child: Card(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(ptitle),
-                                subtitle: Text(pdescription),
+                        child: GestureDetector(
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
                               ),
-                              Image.network(url, height: 250, fit: BoxFit.cover)
-                            ],
-                          ),
-                        ),
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    title: Text(ptitle),
+                                    subtitle: Text(pdescription),
+                                  ),
+                                  Image.network(url,
+                                      height: 250, fit: BoxFit.cover)
+                                ],
+                              ),
+                            ),
+                            onTap: () {
+                              showPopUpMenu(pid);
+                            }),
                       );
                     },
                   );
@@ -109,9 +119,18 @@ class _HomeScreenState extends State<HomeScreen> {
             }));
   }
 
+  postDel(final dId) async {
+    FirebaseFirestore.instance.collection("post").snapshots();
+
+    final _db = FirebaseFirestore.instance;
+    await _db.collection("post").doc(dId).delete();
+    // await docid.delete();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // backgroundColor: Colors.amber,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.transparent,
@@ -127,12 +146,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       body: GestureDetector(
-        child: Container(child: postList()),
+        child: Container(
+            child: postList(),
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                  color: Color.fromARGB(255, 232, 232, 232),
+                  blurRadius: 2,
+                  offset: Offset(2, 8))
+            ])),
         onTap: () {
-          PopupMenuButton(
-            itemBuilder: (context) =>
-                [PopupMenuItem(child: Text("Delete"), onTap: () {})],
-          );
+          print("hello1");
+
+          //   },
+          // );
         },
       ),
 
@@ -210,31 +236,56 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-}
 
-class PostTile extends StatelessWidget {
-  final String imgUrl, title, description;
-  PostTile(
-      {required this.imgUrl, required this.description, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(children: [
-      Container(
-        child: Stack(
-          children: [
-            Image.network(imgUrl),
-            Container(
-              child: Column(
-                children: [Text(title), Text(description)],
-              ),
-            )
-          ],
-        ),
-      ),
-    ]);
+  showPopUpMenu(String pid) {
+    showMenu(
+        context: this.context,
+        position: RelativeRect.fromLTRB(100, 400, 100, 200),
+        items: [
+          PopupMenuItem(
+            child: Text("Are you sure want to delete?"),
+            onTap: () {
+              postDel(pid);
+            },
+            value: 1,
+          ),
+        ]);
   }
 }
+
+// class PostTile extends StatelessWidget {
+//   final String imgUrl, title, description;
+//   PostTile(
+//       {required this.imgUrl, required this.description, required this.title});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView(children: [
+//       GestureDetector(
+//         child: Container(
+//           child: Stack(
+//             children: [
+//               Image.network(imgUrl),
+//               Container(
+//                 child: Column(
+//                   children: [Text(title), Text(description)],
+//                 ),
+//               )
+//             ],
+//           ),
+//         ),
+//         onTap: () {
+//           print("object");
+//           PopupMenuButton(
+//             onSelected: (value) {},
+//             itemBuilder: (context) =>
+//                 [PopupMenuItem(child: Text("Delete"), onTap: () {})],
+//           );
+//         },
+//       ),
+//     ]);
+//   }
+// }
 
 class MapUtils {
   MapUtils._();
