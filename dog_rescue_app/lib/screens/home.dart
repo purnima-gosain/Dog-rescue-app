@@ -70,43 +70,47 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (docData.isEmpty) {
                         return Text("Document is empty");
                       }
-                      // final datas = snapshot.data!.docs;
-                      // for (var st in datas) {
-                      //   final docid = st.id;
-                      //   final ds = postDel(docid);
-                      // }
+
                       String pid = snapshot.data!.docs.elementAt(index).id;
                       String ptitle =
                           snapshot.data!.docs.elementAt(index).get("postTitle");
+                      String uid =
+                          snapshot.data!.docs.elementAt(index).get("uid");
                       String pdescription = snapshot.data!.docs
                           .elementAt(index)
                           .get("description");
                       String url =
                           snapshot.data!.docs.elementAt(index).get("imageUrl");
-                      // final items = [ptitle, pdescription, url];
-                      // final item = items[index];
-                      // String docid = snapshot.data!.docs.id;
+
                       return Padding(
                         padding: const EdgeInsets.fromLTRB(10, 8.0, 8.0, 10),
-                        child: GestureDetector(
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15.0),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(300, 10, 0, 0),
+                                child: GestureDetector(
+                                    child: Icon(Icons.delete),
+                                    onTap: () {
+                                      if (uid == loggedInUser.uid) {
+                                        showPopUpMenu(pid);
+                                      } else {
+                                        showAlertDialog(context);
+                                      }
+                                    }),
                               ),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    title: Text(ptitle),
-                                    subtitle: Text(pdescription),
-                                  ),
-                                  Image.network(url,
-                                      height: 250, fit: BoxFit.cover)
-                                ],
+                              ListTile(
+                                title: Text(ptitle),
+                                subtitle: Text(pdescription),
                               ),
-                            ),
-                            onTap: () {
-                              showPopUpMenu(pid);
-                            }),
+                              Image.network(url, height: 250, fit: BoxFit.cover)
+                            ],
+                          ),
+                        ),
                       );
                     },
                   );
@@ -124,13 +128,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final _db = FirebaseFirestore.instance;
     await _db.collection("post").doc(dId).delete();
-    // await docid.delete();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.amber,
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.transparent,
@@ -154,12 +156,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   blurRadius: 2,
                   offset: Offset(2, 8))
             ])),
-        onTap: () {
-          print("hello1");
-
-          //   },
-          // );
-        },
       ),
 
       drawer: Drawer(
@@ -191,11 +187,11 @@ class _HomeScreenState extends State<HomeScreen> {
           if (value == 0)
             Navigator.of(context)
                 .push(MaterialPageRoute(builder: (context) => HomeScreen()));
-          if (value == 1) MapUtils.openMap(47.628293260721, -122.34263420105);
+          if (value == 1) MapUtils.openMap(27.71226019953982, 85.3306405718298);
           if (value == 2)
             Navigator.of(context).push(
                 MaterialPageRoute(builder: (context) => HelplineScreen()));
-          // if (value == 0) Navigator.of(context).push(MaterialPageRoute(builder: (context) => HomeScreen()));
+
           if (value == 3)
             Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ProfileScreen(userId: loggedInUser.uid)));
@@ -237,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//this is for popup message
   showPopUpMenu(String pid) {
     showMenu(
         context: this.context,
@@ -253,39 +250,30 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// class PostTile extends StatelessWidget {
-//   final String imgUrl, title, description;
-//   PostTile(
-//       {required this.imgUrl, required this.description, required this.title});
+showAlertDialog(BuildContext context) {
+  // set up the button
+  Widget okButton = TextButton(
+    child: Text("OK"),
+    onPressed: () {},
+  );
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView(children: [
-//       GestureDetector(
-//         child: Container(
-//           child: Stack(
-//             children: [
-//               Image.network(imgUrl),
-//               Container(
-//                 child: Column(
-//                   children: [Text(title), Text(description)],
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//         onTap: () {
-//           print("object");
-//           PopupMenuButton(
-//             onSelected: (value) {},
-//             itemBuilder: (context) =>
-//                 [PopupMenuItem(child: Text("Delete"), onTap: () {})],
-//           );
-//         },
-//       ),
-//     ]);
-//   }
-// }
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    // title: Text("My title"),
+    content: Text("You cannot delete other's post."),
+    actions: [
+      okButton,
+    ],
+  );
+
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
 
 class MapUtils {
   MapUtils._();
